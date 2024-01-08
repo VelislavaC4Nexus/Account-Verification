@@ -22,6 +22,9 @@ cartridges/app_storefront_base/cartridge/static/zh_CN/fonts/
 cartridges/app_storefront_base/cartridge/static/en_GB/css/
 cartridges/app_storefront_base/cartridge/static/en_GB/js/
 cartridges/app_storefront_base/cartridge/static/en_GB/fonts/
+cartridges/dw-api-types/
+cartridges/app_custom_account_verification/cartridge/static/default/css/
+cartridges/app_custom_account_verification/static/default/js/
 
 coverage/
 npm-debug.log
