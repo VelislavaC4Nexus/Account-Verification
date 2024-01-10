@@ -164,24 +164,15 @@ server.get('Verify', function (req, res, next) {
 
     var accountId = req.querystring.accountId;
     var email = req.querystring.email;
-    var existingCustomer = CustomerMgr.getCustomerByLogin(email);
 
-    var accountCustomObject = CustomObjectMgr.getCustomObject(accountVerifyCO, accountId);
-    if (accountCustomObject) {
-        accountVerifyHelpers.createAccountAfterVerification(accountCustomObject, accountId);
-
+    var status = accountVerifyHelpers.createAccountAfterVerification(email, accountVerifyCO, accountId);
+    if (status === 'new') {
         res.redirect(URLUtils.url('Account-Show'));
     } else {
-        if (existingCustomer) {
-            accountCustomObject = 'accountAlredyCreated'
-        } else {
-            accountCustomObject = 'expired'
-        }
-        res.redirect(URLUtils.url('Login-Show', 'accountCustomObject', accountCustomObject));
+        res.redirect(URLUtils.url('Login-Show', 'status', status));
     }
 
     next();
-
 })
 
 module.exports = server.exports();

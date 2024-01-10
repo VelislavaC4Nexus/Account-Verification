@@ -48,7 +48,3 @@ base.register = function () {
 }
 
 module.exports = base
-
-
-
-

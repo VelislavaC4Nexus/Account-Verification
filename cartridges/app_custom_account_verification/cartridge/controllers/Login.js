@@ -31,7 +31,7 @@ server.append(
     csrfProtection.generateToken,
     function (req, res, next) {
         var viewData = res.getViewData()
-        viewData.accountCustomObject = req.querystring.accountCustomObject
+        viewData.status = req.querystring.status
         res.setViewData(viewData)
         next();
     }
