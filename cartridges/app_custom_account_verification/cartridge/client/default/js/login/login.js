@@ -7,7 +7,6 @@ var createErrorNotification = require('base/components/errorNotification');
 
 base.register = function () {
     $('form.registration').submit(function (e) {
-        console.log('register-cusrtom');
         var form = $(this);
         e.preventDefault();
         var url = form.attr('action');
@@ -19,13 +18,11 @@ base.register = function () {
             dataType: 'json',
             data: form.serialize(),
             success: function (data) {
-                console.log('1');
                 form.spinner().stop();
                 if (!data.success) {
                     $('form.registration').trigger('login:register:error', data);
                     formValidation(form, data);
                 } else {
-                    console.log('login-success2');
                     $('form.registration').trigger('login:register:success', data);
                     form.trigger('reset');
                     $('.verify-registration').removeClass('d-none');
