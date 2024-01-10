@@ -16,11 +16,9 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="login-form-nav">
-                        <div class="verify-registration alert alert-success d-none">${Resource.msg('veify.account.message.login', 'verify', null)}</div>
-                            
-                      
+                        <div class="js-verify-registration alert alert-success d-none">${Resource.msg('veify.account.message.login', 'verify', null)}</div>
                         <isif condition="${pdict.accountCustomObject === 'expired'}">
-                            <div class="alert alert-danger verify-link-expired">
+                            <div class="alert alert-danger js-verify-link-expired">
                                 ${Resource.msg('veify.account.message.expired', 'verify', null)}
                             </div>
                         <iselseif condition="${pdict.accountCustomObject === 'accountAlredyCreated'}" />

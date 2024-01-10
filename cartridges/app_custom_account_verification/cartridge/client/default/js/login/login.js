@@ -25,12 +25,12 @@ base.register = function () {
                 } else {
                     $('form.registration').trigger('login:register:success', data);
                     form.trigger('reset');
-                    $('.verify-registration').removeClass('d-none');
+                    $('.js-verify-registration').removeClass('d-none');
                     $('#login-tab').addClass('active');
                     $('#login').addClass('active');
                     $('#register-tab').removeClass('active');
                     $('#register').removeClass('active');
-                    $('.verify-link-expired').addClass('d-none');
+                    $('.js-verify-link-expired').addClass('d-none');
                 }
             },
             error: function (err) {
