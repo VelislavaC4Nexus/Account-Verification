@@ -17,13 +17,17 @@
                     <div class="card-body">
                         <div class="login-form-nav">
                         <div class="verify-registration alert alert-success d-none">${Resource.msg('veify.account.message.login', 'verify', null)}</div>
-                        <isprint value="${req.querystring}" encoding="on" />
+                            
+                      
                         <isif condition="${pdict.accountCustomObject === 'expired'}">
-                            <div class="alert alert-danger">
+                            <div class="alert alert-danger verify-link-expired">
                                 ${Resource.msg('veify.account.message.expired', 'verify', null)}
                             </div>
+                        <iselseif condition="${pdict.accountCustomObject === 'accountAlredyCreated'}" />
+                            <div class="alert alert-success">
+                                ${Resource.msg('veify.account.message.alredy.verified', 'verify', null)}
+                            </div>
                         <iselse/>
-                            
                         </isif>
                             <isinclude template="account/components/navTabs" />
                             <div class="tab-content">

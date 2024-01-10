@@ -34,9 +34,7 @@ base.register = function () {
                     $('#login').addClass('active');
                     $('#register-tab').removeClass('active');
                     $('#register').removeClass('active');
-                    // const successAlert = $('<div class="alert-success">Registration successful!</div>');
-                    // $('#login').after(successAlert);
-                    // location.href = data.redirectUrl;
+                    $('.verify-link-expired').addClass('d-none');
                 }
             },
             error: function (err) {

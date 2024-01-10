@@ -1,4 +1,4 @@
-function saveAccountToCO (email, password, phone, firstName, lastName) {
+function saveAccountToCO(email, password, phone, firstName, lastName) {
     var Transaction = require('dw/system/Transaction');
     var UUIDUtils = require('dw/util/UUIDUtils');
     var CustomObjectMgr = require("dw/object/CustomObjectMgr");
@@ -34,7 +34,7 @@ function sendVerificationEmail(userData) {
         email: userData.custom.email,
         firstName: userData.custom.firstName,
         lastName: userData.custom.lastName,
-        url: URLUtils.https('Account-Verify', 'accountId', userData.custom.accountId)
+        url: URLUtils.https('Account-Verify', 'accountId', userData.custom.accountId,'email', userData.custom.email)
     };
 
     var emailObj = {
@@ -47,11 +47,60 @@ function sendVerificationEmail(userData) {
     emailHelpers.sendEmail(emailObj, 'checkout/confirmation/accountVerificationEmail', userObject);
 }
 
-function createAccountAfterVerification(){
+function createAccountAfterVerification(accountCustomObject,accountId) {
+    var Transaction = require('dw/system/Transaction');
+    var CustomObjectMgr = require("dw/object/CustomObjectMgr");
+    var URLUtils = require("dw/web/URLUtils");
+    var CustomerMgr = require('dw/customer/CustomerMgr');
+    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+    // var accountCustomObject = CustomObjectMgr.getCustomObject(accountVerifyCO, accountId);
+    // attempt to create a new user and log that user in.
+    // if (accountCustomObject) {
+        var login = accountCustomObject.custom.email;
+        var password = accountCustomObject.custom.password;
+        try {
+            Transaction.wrap(function () {
+                var error = {};
+                // save account info in custom object
+                var newCustomer = CustomerMgr.createCustomer(login, password);
+                // var authenticatedCustomer;
+                var authenticateCustomerResult = CustomerMgr.authenticateCustomer(login, password);
+                if (authenticateCustomerResult.status !== 'AUTH_OK') {
+                    error = { authError: true, status: authenticateCustomerResult.status };
+                    throw error;
+                }
 
+                var authenticatedCustomer = CustomerMgr.loginCustomer(authenticateCustomerResult, false);
+                // send a registration email
+
+                if (!authenticatedCustomer) {
+                    error = { authError: true, status: authenticateCustomerResult.status };
+                    throw error;
+                } else {
+                    // assign values to the profile
+                    var newCustomerProfile = newCustomer.getProfile();
+
+                    newCustomerProfile.firstName = accountCustomObject.custom.firstName;
+                    newCustomerProfile.lastName = accountCustomObject.custom.lastName;
+                    newCustomerProfile.phoneHome = accountCustomObject.custom.phone;
+                    newCustomerProfile.email = accountCustomObject.custom.email;
+                }
+                accountHelpers.sendCreateAccountEmail(authenticatedCustomer.profile);
+                CustomObjectMgr.remove(accountCustomObject)
+            });
+        } catch (e) {
+            serverError = true;
+        }
+
+    //     res.redirect(URLUtils.url('Account-Show',));
+    // } else {
+    //     accountCustomObject = 'expired'
+    //     res.redirect(URLUtils.url('Login-Show', 'accountCustomObject', accountCustomObject));
+    // }
 }
 
 module.exports = {
     saveAccountToCO: saveAccountToCO,
-    sendVerificationEmail:sendVerificationEmail
+    sendVerificationEmail: sendVerificationEmail,
+    createAccountAfterVerification:createAccountAfterVerification
 };

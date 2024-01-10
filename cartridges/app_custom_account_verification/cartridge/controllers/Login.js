@@ -30,13 +30,11 @@ server.append(
     server.middleware.https,
     csrfProtection.generateToken,
     function (req, res, next) {
-        var URLUtils = require('dw/web/URLUtils');
-        var Resource = require('dw/web/Resource');
-
         var viewData = res.getViewData()
-        viewData.accountCustomObject = req.querystring.accountCustomObject 
+        viewData.accountCustomObject = req.querystring.accountCustomObject
         res.setViewData(viewData)
         next();
     }
 );
+
 module.exports = server.exports();

@@ -95,13 +95,10 @@ server.replace(
             res.setViewData(registrationFormObj);
 
             this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-                // var Transaction = require('dw/system/Transaction');
-                // var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 
                 var authenticatedCustomer;
                 var serverError;
-
-                // getting variables for the BeforeComplete function
+                
                 var registrationForm = res.getViewData(); // eslint-disable-line
 
                 if (registrationForm.validForm) {
@@ -110,45 +107,7 @@ server.replace(
                     var password = registrationForm.password;
 
                     newAccount = accountVerifyHelpers.saveAccountToCO(registrationForm.email, registrationForm.password, registrationForm.phone, registrationForm.firstName, registrationForm.lastName);
-                    // // attempt to create a new user and log that user in.
-                    // try {
-                    //     Transaction.wrap(function () {
-                    //         var error = {};
-                    //         //save account info in custom object
-                    //         // var newCustomer = CustomerMgr.createCustomer(login, password);
-
-                    //         // var authenticateCustomerResult = CustomerMgr.authenticateCustomer(login, password);
-                    //         // if (authenticateCustomerResult.status !== 'AUTH_OK') {
-                    //         //     error = { authError: true, status: authenticateCustomerResult.status };
-                    //         //     throw error;
-                    //         // }
-
-                    //         // authenticatedCustomer = CustomerMgr.loginCustomer(authenticateCustomerResult, false);
-
-                    //         // if (!authenticatedCustomer) {
-                    //         //     error = { authError: true, status: authenticateCustomerResult.status };
-                    //         //     throw error;
-                    //         // } else {
-                    //         //     // assign values to the profile
-                    //         //     var newCustomerProfile = newCustomer.getProfile();
-
-                    //         //     newCustomerProfile.firstName = registrationForm.firstName;
-                    //         //     newCustomerProfile.lastName = registrationForm.lastName;
-                    //         //     newCustomerProfile.phoneHome = registrationForm.phone;
-                    //         //     newCustomerProfile.email = registrationForm.email;
-                    //         // }
-                    //     });
-                    // } catch (e) {
-                    //     if (e.authError) {
-                    //         serverError = true;
-                    //     } else {
-                    //         registrationForm.validForm = false;
-                    //         registrationForm.form.customer.email.valid = false;
-                    //         registrationForm.form.customer.emailconfirm.valid = false;
-                    //         registrationForm.form.customer.email.error =
-                    //             Resource.msg('error.message.username.invalid', 'forms', null);
-                    //     }
-                    // }
+              
                 }
 
                 delete registrationForm.password;
@@ -168,10 +127,7 @@ server.replace(
                 if (registrationForm.validForm) {
                     //send verification email
                     accountVerifyHelpers.sendVerificationEmail(newAccount);
-
-                    // // send a registration email
-                    // accountHelpers.sendCreateAccountEmail(authenticatedCustomer.profile);
-
+                  
                     res.setViewData({ authenticatedCustomer: authenticatedCustomer });
                     res.json({
                         success: true,
@@ -196,54 +152,25 @@ server.replace(
 );
 
 server.get('Verify', function (req, res, next) {
-    var Transaction = require('dw/system/Transaction');
     var CustomObjectMgr = require("dw/object/CustomObjectMgr");
     var URLUtils = require("dw/web/URLUtils");
+    var accountVerifyCO = 'ACCOUNT_VERIFY_CO'
 
     var accountId = req.querystring.accountId;
-    var accountCustomObject = CustomObjectMgr.getCustomObject("ACCOUNT_VERIFY_CO", accountId);
+    var email = req.querystring.email;
+    var existingCustomer = CustomerMgr.getCustomerByLogin(email);
 
-    // attempt to create a new user and log that user in.
+    var accountCustomObject = CustomObjectMgr.getCustomObject(accountVerifyCO, accountId);
     if (accountCustomObject) {
-        var login = accountCustomObject.custom.email;
-        var password = accountCustomObject.custom.password;
-        try {
-            Transaction.wrap(function () {
-                var error = {};
-                // save account info in custom object
-                var newCustomer = CustomerMgr.createCustomer(login, password);
-                // var authenticatedCustomer;
-                var authenticateCustomerResult = CustomerMgr.authenticateCustomer(login, password);
-                if (authenticateCustomerResult.status !== 'AUTH_OK') {
-                    error = { authError: true, status: authenticateCustomerResult.status };
-                    throw error;
-                }
+        accountVerifyHelpers.createAccountAfterVerification(accountCustomObject, accountId);
 
-                var authenticatedCustomer = CustomerMgr.loginCustomer(authenticateCustomerResult, false);
-                // send a registration email
-
-                if (!authenticatedCustomer) {
-                    error = { authError: true, status: authenticateCustomerResult.status };
-                    throw error;
-                } else {
-                    // assign values to the profile
-                    var newCustomerProfile = newCustomer.getProfile();
-
-                    newCustomerProfile.firstName = accountCustomObject.custom.firstName;
-                    newCustomerProfile.lastName = accountCustomObject.custom.lastName;
-                    newCustomerProfile.phoneHome = accountCustomObject.custom.phone;
-                    newCustomerProfile.email = accountCustomObject.custom.email;
-                }
-                accountHelpers.sendCreateAccountEmail(authenticatedCustomer.profile);
-                CustomObjectMgr.remove(accountCustomObject)
-            });
-        } catch (e) {
-                serverError = true;
-        }
-
-        res.redirect(URLUtils.url('Account-Show',));
+        res.redirect(URLUtils.url('Account-Show'));
     } else {
-        accountCustomObject='expired'
+        if (existingCustomer) {
+            accountCustomObject = 'accountAlredyCreated'
+        } else {
+            accountCustomObject = 'expired'
+        }
         res.redirect(URLUtils.url('Login-Show', 'accountCustomObject', accountCustomObject));
     }
 
