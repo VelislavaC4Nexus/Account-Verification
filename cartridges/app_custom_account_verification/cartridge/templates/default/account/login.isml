@@ -23,7 +23,7 @@
                             </div>
                         <iselseif condition="${pdict.status === 'verified'}" />
                             <div class="alert alert-success">
-                                ${Resource.msg('veify.account.message.alredy.verified', 'verify', null)}
+                                ${Resource.msg('veify.account.message.already.verified', 'verify', null)}
                             </div>
                         <iselse/>
                         </isif>
