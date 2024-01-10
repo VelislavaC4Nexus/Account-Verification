@@ -1,29 +1,32 @@
-function saveAccountToCO(email, password, phone, firstName, lastName) {
+/**
+ * Save account data into custom object
+ * @param {obj} userData - object that contains user's email address and name information.
+ */
+function saveAccountToCO(userData) {
     var Transaction = require('dw/system/Transaction');
     var UUIDUtils = require('dw/util/UUIDUtils');
     var CustomObjectMgr = require("dw/object/CustomObjectMgr");
     var encoder = require('*/cartridge/scripts/utilHelpers/utilHelper');
 
-    var encodedPassword = encoder.encode(password)
+    var encodedPassword = encoder.encode(userData.password)
     var accountId = UUIDUtils.createUUID();
 
     var accountObject;
 
     Transaction.wrap(function () {
         accountObject = CustomObjectMgr.createCustomObject("ACCOUNT_VERIFY_CO", accountId);
-        accountObject.custom.email = email;
+        accountObject.custom.email = userData.email;
         accountObject.custom.password = encodedPassword;
-        accountObject.custom.phone = phone;
-        accountObject.custom.firstName = firstName;
-        accountObject.custom.lastName = lastName;
+        accountObject.custom.phone = userData.phone;
+        accountObject.custom.firstName = userData.firstName;
+        accountObject.custom.lastName = userData.lastName;
     });
 
     return accountObject;
 }
 
-
 /**
- * Send an email that would notify the user that account was created
+ * Send an email to verify the account create
  * @param {obj} userData - object that contains user's email address and name information.
  */
 function sendVerificationEmail(userData) {
@@ -49,6 +52,12 @@ function sendVerificationEmail(userData) {
     emailHelpers.sendEmail(emailObj, 'checkout/confirmation/accountVerificationEmail', userObject);
 }
 
+/**
+ * Create account after account verification
+ * Send an email that account is created
+ * @param {obj} accountCustomObject - object that contains user's email address and name information.
+ * @param {string} accountId - account id from query params, id of the custom object that keeps customers data
+ */
 function createAccountAfterVerification(accountCustomObject, accountId) {
     var Transaction = require('dw/system/Transaction');
     var CustomObjectMgr = require("dw/object/CustomObjectMgr");
@@ -65,7 +74,6 @@ function createAccountAfterVerification(accountCustomObject, accountId) {
             var error = {};
             // save account info in custom object
             var newCustomer = CustomerMgr.createCustomer(login, password);
-            // var authenticatedCustomer;
             var authenticateCustomerResult = CustomerMgr.authenticateCustomer(login, password);
             if (authenticateCustomerResult.status !== 'AUTH_OK') {
                 error = { authError: true, status: authenticateCustomerResult.status };
@@ -73,7 +81,6 @@ function createAccountAfterVerification(accountCustomObject, accountId) {
             }
 
             var authenticatedCustomer = CustomerMgr.loginCustomer(authenticateCustomerResult, false);
-            // send a registration email
 
             if (!authenticatedCustomer) {
                 error = { authError: true, status: authenticateCustomerResult.status };
@@ -87,6 +94,7 @@ function createAccountAfterVerification(accountCustomObject, accountId) {
                 newCustomerProfile.phoneHome = accountCustomObject.custom.phone;
                 newCustomerProfile.email = accountCustomObject.custom.email;
             }
+            // send a registration email
             accountHelpers.sendCreateAccountEmail(authenticatedCustomer.profile);
             CustomObjectMgr.remove(accountCustomObject)
         });

@@ -42,7 +42,6 @@ server.replace(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
-        // var CustomerMgr = require('dw/customer/CustomerMgr');
         var Resource = require('dw/web/Resource');
 
         var formErrors = require('*/cartridge/scripts/formErrors');
@@ -98,16 +97,15 @@ server.replace(
 
                 var authenticatedCustomer;
                 var serverError;
-                
+
                 var registrationForm = res.getViewData(); // eslint-disable-line
 
                 if (registrationForm.validForm) {
                     var newAccount;
                     var login = registrationForm.email;
                     var password = registrationForm.password;
-
-                    newAccount = accountVerifyHelpers.saveAccountToCO(registrationForm.email, registrationForm.password, registrationForm.phone, registrationForm.firstName, registrationForm.lastName);
-              
+                    //save account data into custom object
+                    newAccount = accountVerifyHelpers.saveAccountToCO(registrationForm);
                 }
 
                 delete registrationForm.password;
@@ -127,7 +125,7 @@ server.replace(
                 if (registrationForm.validForm) {
                     //send verification email
                     accountVerifyHelpers.sendVerificationEmail(newAccount);
-                  
+
                     res.setViewData({ authenticatedCustomer: authenticatedCustomer });
                     res.json({
                         success: true,
@@ -151,6 +149,14 @@ server.replace(
     }
 );
 
+/**
+ * Account-Verify : This endpoint is called when user click on the link of the sended verification email
+ * @name Base/Account-Verify
+ * @function
+ * @memberof Account
+ * @param {renders} - isml
+ * @param {serverfunction} - get
+ */
 server.get('Verify', function (req, res, next) {
     var CustomObjectMgr = require("dw/object/CustomObjectMgr");
     var URLUtils = require("dw/web/URLUtils");

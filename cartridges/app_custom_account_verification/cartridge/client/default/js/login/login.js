@@ -6,7 +6,6 @@ var formValidation = require('base/components/formValidation');
 var createErrorNotification = require('base/components/errorNotification');
 
 base.register = function () {
-    
     $('form.registration').submit(function (e) {
         console.log('register-cusrtom');
         var form = $(this);
