@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <custom-type type-id="ACCOUNT_VERIFY_CO">
+        <display-name xml:lang="x-default">Account Verification Custom Object</display-name>
+        <description xml:lang="x-default">Store Account Info</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <retention-days>1</retention-days>
+        <key-definition attribute-id="accountId">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="email">
+                <display-name xml:lang="x-default">Email</display-name>
+                <description xml:lang="x-default">customer email</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="firstName">
+                <display-name xml:lang="x-default">First Name</display-name>
+                <description xml:lang="x-default">customers first name</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastName">
+                <display-name xml:lang="x-default">Last Name</display-name>
+                <description xml:lang="x-default">customer`s last name</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="password">
+                <display-name xml:lang="x-default">Password</display-name>
+                <description xml:lang="x-default">customer`s password</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="phone">
+                <display-name xml:lang="x-default">Phone</display-name>
+                <description xml:lang="x-default">customer`s phone number</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Account_Verify">
+                <display-name xml:lang="x-default">Account Verify</display-name>
+                <attribute attribute-id="firstName"/>
+                <attribute attribute-id="password"/>
+                <attribute attribute-id="accountId"/>
+                <attribute attribute-id="email"/>
+                <attribute attribute-id="lastName"/>
+                <attribute attribute-id="phone"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+</metadata>
